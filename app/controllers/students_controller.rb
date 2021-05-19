@@ -18,6 +18,10 @@ class StudentsController < ApplicationController
   # GET /students/1/edit
   def edit
   end
+  # POST /students/courses or /students/courses.json
+  # def courses
+
+  # end 
 
   # POST /students or /students.json
   def create

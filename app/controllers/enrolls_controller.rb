@@ -1,5 +1,6 @@
 class EnrollsController < ApplicationController
   before_action :set_enroll, only: %i[ show edit update destroy ]
+  skip_before_action :verify_authenticity_token
 
   # GET /enrolls or /enrolls.json
   def index
@@ -21,16 +22,33 @@ class EnrollsController < ApplicationController
 
   # POST /enrolls or /enrolls.json
   def create
-    @enroll = Enroll.new(enroll_params)
-
-    respond_to do |format|
-      if @enroll.save
-        format.html { redirect_to @enroll, notice: "Enroll was successfully created." }
-        format.json { render :show, status: :created, location: @enroll }
+    @data=enroll_params
+    if Course.find(@data[:course_id]).limit== Course.find(@data[:course_id]).students.count || Student.find(@data[:student_id]).courses.exists?(Course.find(@data[:course_id]).id)
+      if Student.find(@data[:student_id]).courses.exists?(Course.find(@data[:course_id]).id)
+        respond_to do |format|
+          format.html { redirect_to @data, notice: "Already addded to the course" }
+          format.json { render json: "Already addded to the course"  }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @enroll.errors, status: :unprocessable_entity }
+        respond_to do |format|
+          format.html { redirect_to @data, notice: "Course limit has reached" }
+          format.json { render json: "Course limit has reached"  }
+        end
       end
+    else
+      @enroll = Enroll.new(@data)
+    # render json: @enroll
+      respond_to do |format|
+        if @enroll.save
+          format.html { redirect_to @enroll, notice: "Enroll was successfully created." }
+          format.json { render :show, status: :created, location: @enroll }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @enroll.errors, status: :unprocessable_entity }
+        end
+    end
+
+    
     end
   end
 
