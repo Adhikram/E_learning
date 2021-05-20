@@ -1,7 +1,7 @@
 class CoursesController < ApplicationController
   before_action :set_course, only: %i[ show edit update]
-  skip_before_action :verify_authenticity_token
-
+  # skip_before_action :verify_authenticity_token
+  before_action :authenticate_user!
   # GET /courses or /courses.json
   def index
     @course = Student.find(current_user.id).courses
