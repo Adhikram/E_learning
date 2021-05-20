@@ -1,6 +1,7 @@
 class EnrollsController < ApplicationController
   # before_action :set_enroll, only: %i[ show edit update destroy ]
-  skip_before_action :verify_authenticity_token
+  # skip_before_action :verify_authenticity_token
+  before_action :authenticate_user!
 
   # GET /enrolls or /enrolls.json
   def index
