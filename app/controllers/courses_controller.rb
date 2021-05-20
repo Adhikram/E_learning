@@ -1,9 +1,13 @@
 class CoursesController < ApplicationController
-  before_action :set_course, only: %i[ show edit update destroy ]
+  before_action :set_course, only: %i[ show edit update]
+  skip_before_action :verify_authenticity_token
 
   # GET /courses or /courses.json
   def index
-    @courses = Course.all
+    @course = Student.find(current_user.id).courses
+    @enrolls = Enroll.all
+    # @courses = Student.find(3).courses
+
   end
 
   # GET /courses/1 or /courses/1.json
@@ -49,9 +53,10 @@ class CoursesController < ApplicationController
 
   # DELETE /courses/1 or /courses/1.json
   def destroy
-    @course.destroy
+    @enroll = Enroll.where(:student_id => current_user.id, :course_id => params[:id])
+    Enroll.destroy(@enroll.ids)
     respond_to do |format|
-      format.html { redirect_to courses_url, notice: "Course was successfully destroyed." }
+      format.html { redirect_to courses_url, notice: "Enroll was successfully destroyed." }
       format.json { head :no_content }
     end
   end
