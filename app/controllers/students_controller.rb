@@ -3,11 +3,13 @@ class StudentsController < ApplicationController
 
   # GET /students or /students.json
   def index
-    @students = Student.all
+    @student = Student.find_by(user_id:current_user.id)
+    # @course=Student.find(3).courses
   end
 
   # GET /students/1 or /students/1.json
   def show
+    
   end
 
   # GET /students/new
@@ -26,16 +28,24 @@ class StudentsController < ApplicationController
   # POST /students or /students.json
   def create
     @student = Student.new(student_params)
-
-    respond_to do |format|
-      if @student.save
-        format.html { redirect_to @student, notice: "Student was successfully created." }
-        format.json { render :show, status: :created, location: @student }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @student.errors, status: :unprocessable_entity }
+    if !Student.exists?(current_user.id)
+      @student = Student.create(name:@student[:name],contact:@student[:contact],user_id:current_user.id)
+      respond_to do |format|
+        if @student.save
+          format.html { redirect_to @student, notice: "Student was successfully created." }
+          format.json { render :show, status: :created, location: @student }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @student.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to students_url, notice: "Student Already exist" }
       end
     end
+
+    
   end
 
   # PATCH/PUT /students/1 or /students/1.json
